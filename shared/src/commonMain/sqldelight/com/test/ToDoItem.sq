@@ -1,0 +1,25 @@
+import kotlin.Boolean;
+
+CREATE TABLE TODOItem (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    imageUrl TEXT NOT NULL,
+    isFinish INTEGER AS Boolean NOT NULL
+);
+
+selectAll:
+SELECT  *
+FROM TODOItem;
+
+insert:
+INSERT INTO TODOItem(id,title,imageUrl,isFinish)
+VALUES (?,?,?,?);
+
+updateFinish:
+UPDATE TODOItem
+SET isFinish =:isFinish
+WHERE id = ?;
+
+deleteById:
+DELETE FROM TODOItem
+WHERE id = ?;

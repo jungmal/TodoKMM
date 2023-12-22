@@ -24,7 +24,7 @@ kotlin {
     }
 
     sourceSets {
-        val sqlDelightVersion = "2.0.0-alpha05"
+        val sqlDelightVersion = "2.0.0"
         val commonMain by getting {
             dependencies {
                 implementation("app.cash.sqldelight:primitive-adapters:$sqlDelightVersion")
