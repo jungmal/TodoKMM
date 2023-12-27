@@ -9,11 +9,15 @@ struct ContentView: View {
     let appDataBase : AppDataBase = AppDataBase(driverFactory: DriverFactory())
     
     @State var itemList : [TODOItem] = []
+    @State var lastDeletedItem : DeletedTODOItem? = nil
+    @State var deletedCount : Int = 0
     @State var titleText = ""
     @State var imageUrlText = ""
     
     var body: some View {
         VStack{
+            Text("완료 후 삭제된 TODO 개수: \(deletedCount)").padding(4)
+            Text("가장 최근에 삭제된 TODO : \(lastDeletedItem?.title ?? "없음")")
             HStack {
                 TextField("enter TODO Title", text: $titleText)
             }.padding(10)
@@ -31,7 +35,14 @@ struct ContentView: View {
             
             ForEach(itemList,id:\.self) { item in
                 ToDoRow(item: item) {
-                    appDataBase.deleteItem(id: item.id)
+                    let currentTimeMillis = Int64(Date().timeIntervalSince1970 * 1000)
+                    appDataBase.deleteItem(
+                        id: item.id,
+                        title: item.title,
+                        imageUrl: item.imageUrl,
+                        checked: item.isFinish,
+                        time: currentTimeMillis
+                    )
                 } updateToggle: {
                     appDataBase.updateCheck(checked: !item.isFinish, id: item.id)
                 }
@@ -40,6 +51,17 @@ struct ContentView: View {
         }.onAppear {
             appDataBase.getAllItemFlow().collect(collector: Collector<[TODOItem]> {value in
                 self.itemList = value
+            }) { error in
+                print(error ?? "")
+            }
+            appDataBase.getFinishedItemCountFlow().collect(collector: Collector<Int> {value in
+                self.deletedCount = value
+            }) { error in
+                print(error ?? "")
+            }
+            appDataBase.getLatestDeletedItemFlow().collect(collector: Collector<DeletedTODOItem> {value in
+                self.lastDeletedItem = value
+                
             }) { error in
                 print(error ?? "")
             }
@@ -53,7 +75,7 @@ struct ToDoRow: View {
     let updateToggle : () -> Void
     var body: some View {
         HStack{
-            Text(item.title + item.imageUrl)
+            Text(item.title)
             Spacer()
             TransactionCardRow(transaction: Transaction(), imageUrl: item.imageUrl)
             Spacer()
