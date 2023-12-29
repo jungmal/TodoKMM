@@ -3,6 +3,7 @@ package com.test.iliketodo.android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,9 +24,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.test.DeletedTODOItem
 import com.test.TODOItem
 import com.test.iliketodo.AppDataBase
 import com.test.iliketodo.DriverFactory
@@ -40,17 +44,32 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 val todoItemList by appDataBase.getAllItemFlow().collectAsState(initial = emptyList())
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                val deletedCount by appDataBase.getFinishedItemCountFlow().collectAsState(initial = 0L)
+                val lastDeleted by appDataBase.getLatestDeletedItemFlow().collectAsState(initial = null)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = MaterialTheme.colors.background),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Text(
+                        text = "완료 후 삭제된 TODO 개수: $deletedCount",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    Text(
+                        text = "가장 최근에 삭제된 TODO: ${lastDeleted?.title ?: "없음"}",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
                     ToDoView(
                         todoItemList,
                         addAction = { title, imageUrl ->
                             appDataBase.insertItem(title, imageUrl)
                         },
-                        deleteAction = { id ->
-                            appDataBase.deleteItem(id)
+                        deleteAction = { todoItem ->
+                            appDataBase.deleteItem(todoItem.id, todoItem.title, todoItem.imageUrl, todoItem.isFinish, System.currentTimeMillis())
                         },
                         checkToggle = { id, checked ->
                             appDataBase.updateCheck(checked, id)
@@ -66,7 +85,7 @@ class MainActivity : ComponentActivity() {
 fun ToDoView(
     itemList: List<TODOItem>,
     addAction: (String, String) -> Unit = { _, _ -> },
-    deleteAction: (Long) -> Unit = {},
+    deleteAction: (TODOItem) -> Unit = {},
     checkToggle: (Long, Boolean) -> Unit = { _, _ -> }
 ) {
     var titleText by remember {
@@ -121,7 +140,7 @@ fun ToDoView(
                 ToDoRow(
                     item = item,
                     deleteAction = {
-                        deleteAction(item.id)
+                        deleteAction(item)
                     },
                     checkToggle = { checked ->
                         checkToggle(item.id, checked)
