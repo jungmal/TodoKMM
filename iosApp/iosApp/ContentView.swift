@@ -1,80 +1,57 @@
 import SwiftUI
 import shared
 import Foundation
-import SwiftUI
 import Combine
 
 
 struct ContentView: View {
-    let appDataBase : AppDataBase = AppDataBase(driverFactory: DriverFactory())
-    
-    @State var itemList : [TODOItem] = []
-    @State var lastDeletedItem : DeletedTODOItem? = nil
-    @State var deletedCount : Int = 0
-    @State var titleText = ""
-    @State var imageUrlText = ""
-    
+    @StateObject var viewModel = ContentViewModel()
+
     var body: some View {
-        VStack{
-            Text("완료 후 삭제된 TODO 개수: \(deletedCount)").padding(4)
-            Text("가장 최근에 삭제된 TODO : \(lastDeletedItem?.title ?? "없음")")
+        VStack {
+            Text("완료 후 삭제된 TODO 개수: \(viewModel.state.deletedCount)").padding(4)
+            Text("가장 최근에 삭제된 TODO : \(viewModel.state.lastDeletedItem?.title ?? "없음")")
+            
             HStack {
-                TextField("enter TODO Title", text: $titleText)
+                TextField("enter TODO Title", text: Binding(
+                    get: { viewModel.state.titleText },
+                    set: { viewModel.updateTitleText($0) }
+                ))
             }.padding(10)
             
             HStack {
-                TextField("enter TODO imageUrl", text: $imageUrlText)
-            
+                TextField("enter TODO imageUrl", text: Binding(
+                    get: { viewModel.state.imageUrlText },
+                    set: { viewModel.updateImageUrlText($0) }
+                ))
             }.padding(10)
-            
-            
+
             Button("ADD") {
-                appDataBase.insertItem(title: titleText, imageUrl: imageUrlText)
+                viewModel.trigger(.addItem(title: viewModel.state.titleText, imageUrl: viewModel.state.imageUrlText))
             }
-            
-            
-            ForEach(itemList,id:\.self) { item in
-                ToDoRow(item: item) {
-                    let currentTimeMillis = Int64(Date().timeIntervalSince1970 * 1000)
-                    appDataBase.deleteItem(
-                        id: item.id,
-                        title: item.title,
-                        imageUrl: item.imageUrl,
-                        checked: item.isFinish,
-                        time: currentTimeMillis
-                    )
-                } updateToggle: {
-                    appDataBase.updateCheck(checked: !item.isFinish, id: item.id)
-                }
+
+            ForEach(viewModel.state.itemList, id: \.self) { item in
+                ToDoRow(item: item, actionDelete: {
+                    viewModel.trigger(.deleteItem(item: item))
+                }, updateToggle: {
+                    viewModel.trigger(.updateItem(item: item, checked: !item.isFinish))
+                })
             }
             Spacer()
-        }.onAppear {
-            appDataBase.getAllItemFlow().collect(collector: Collector<[TODOItem]> {value in
-                self.itemList = value
-            }) { error in
-                print(error ?? "")
-            }
-            appDataBase.getFinishedItemCountFlow().collect(collector: Collector<Int> {value in
-                self.deletedCount = value
-            }) { error in
-                print(error ?? "")
-            }
-            appDataBase.getLatestDeletedItemFlow().collect(collector: Collector<DeletedTODOItem> {value in
-                self.lastDeletedItem = value
-                
-            }) { error in
-                print(error ?? "")
-            }
+        }
+        .onAppear {
+            viewModel.trigger(.loadAllData)
         }
     }
 }
 
 struct ToDoRow: View {
-    let item : TODOItem
-    let actionDelete : () -> Void
-    let updateToggle : () -> Void
+    let item: TODOItem
+    let actionDelete: () -> Void
+    let updateToggle: () -> Void
+
     var body: some View {
-        HStack{
+        HStack {
             Text(item.title)
             Spacer()
             TransactionCardRow(transaction: Transaction(), imageUrl: item.imageUrl)
