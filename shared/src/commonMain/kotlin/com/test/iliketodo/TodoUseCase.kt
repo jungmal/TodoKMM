@@ -10,7 +10,7 @@ import com.test.TODOItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
-class AppDataBase(driverFactory: DriverFactory) {
+class TodoUseCase(driverFactory: DriverFactory) {
     private val driver = driverFactory.createDriver()
     private val database = Database(driver)
     private val queries = database.toDoItemQueries

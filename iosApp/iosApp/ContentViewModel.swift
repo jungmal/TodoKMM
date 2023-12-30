@@ -14,7 +14,7 @@ import Combine
 
 class ContentViewModel: ObservableObject {
     @Published private(set) var state = ContentViewState()
-    let appDataBase: AppDataBase = AppDataBase(driverFactory: DriverFactory())
+    let todoUseCase: TodoUseCase = TodoUseCase(driverFactory: DriverFactory())
 
     func trigger(_ event: ContentViewEvent) {
         switch event {
@@ -40,43 +40,40 @@ class ContentViewModel: ObservableObject {
 
 
     private func addItem(title: String, imageUrl: String) {
-        appDataBase.insertItem(title: title, imageUrl: imageUrl)
-        loadAllData()
+        todoUseCase.insertItem(title: title, imageUrl: imageUrl)
     }
 
     private func deleteItem(item: TODOItem) {
         let currentTimeMillis = Int64(Date().timeIntervalSince1970 * 1000)
-        appDataBase.deleteItem(
+        todoUseCase.deleteItem(
             id: item.id,
             title: item.title,
             imageUrl: item.imageUrl,
             checked: item.isFinish,
             time: currentTimeMillis
         )
-        loadAllData()
     }
 
     private func updateItem(item: TODOItem, checked: Bool) {
-        appDataBase.updateCheck(checked: checked, id: item.id)
-        loadAllData()
+        todoUseCase.updateCheck(checked: checked, id: item.id)
     }
 
     private func loadAllData() {
-        appDataBase.getAllItemFlow().collect(collector: Collector<[TODOItem]> {value in
+        todoUseCase.getAllItemFlow().collect(collector: Collector<[TODOItem]> {value in
             DispatchQueue.main.async {
                 self.state.itemList = value
             }
         }) { error in
             print(error ?? "")
         }
-        appDataBase.getFinishedItemCountFlow().collect(collector: Collector<Int> {value in
+        todoUseCase.getFinishedItemCountFlow().collect(collector: Collector<Int> {value in
             DispatchQueue.main.async {
                 self.state.deletedCount = value
             }
         }) { error in
             print(error ?? "")
         }
-        appDataBase.getLatestDeletedItemFlow().collect(collector: Collector<DeletedTODOItem> {value in
+        todoUseCase.getLatestDeletedItemFlow().collect(collector: Collector<DeletedTODOItem> {value in
             DispatchQueue.main.async {
                 self.state.lastDeletedItem = value
             }

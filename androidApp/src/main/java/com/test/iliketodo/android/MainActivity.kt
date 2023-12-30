@@ -9,18 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,23 +26,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.test.DeletedTODOItem
 import com.test.TODOItem
-import com.test.iliketodo.AppDataBase
+import com.test.iliketodo.TodoUseCase
 import com.test.iliketodo.DriverFactory
-import com.test.iliketodo.Greeting
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var appDataBase: AppDataBase
+    private lateinit var todoUseCase: TodoUseCase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appDataBase = AppDataBase(DriverFactory(this))
+        todoUseCase = TodoUseCase(DriverFactory(this))
         setContent {
             MyApplicationTheme {
-                val todoItemList by appDataBase.getAllItemFlow().collectAsState(initial = emptyList())
-                val deletedCount by appDataBase.getFinishedItemCountFlow().collectAsState(initial = 0L)
-                val lastDeleted by appDataBase.getLatestDeletedItemFlow().collectAsState(initial = null)
+                val todoItemList by todoUseCase.getAllItemFlow().collectAsState(initial = emptyList())
+                val deletedCount by todoUseCase.getFinishedItemCountFlow().collectAsState(initial = 0L)
+                val lastDeleted by todoUseCase.getLatestDeletedItemFlow().collectAsState(initial = null)
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -66,13 +61,13 @@ class MainActivity : ComponentActivity() {
                     ToDoView(
                         todoItemList,
                         addAction = { title, imageUrl ->
-                            appDataBase.insertItem(title, imageUrl)
+                            todoUseCase.insertItem(title, imageUrl)
                         },
                         deleteAction = { todoItem ->
-                            appDataBase.deleteItem(todoItem.id, todoItem.title, todoItem.imageUrl, todoItem.isFinish, System.currentTimeMillis())
+                            todoUseCase.deleteItem(todoItem.id, todoItem.title, todoItem.imageUrl, todoItem.isFinish, System.currentTimeMillis())
                         },
                         checkToggle = { id, checked ->
-                            appDataBase.updateCheck(checked, id)
+                            todoUseCase.updateCheck(checked, id)
                         }
                     )
                 }
