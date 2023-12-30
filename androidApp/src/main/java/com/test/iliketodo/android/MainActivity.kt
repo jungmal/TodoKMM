@@ -25,54 +25,67 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import com.test.TODOItem
 import com.test.iliketodo.TodoUseCase
 import com.test.iliketodo.DriverFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private lateinit var todoUseCase: TodoUseCase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        todoUseCase = TodoUseCase(DriverFactory(this))
         setContent {
             MyApplicationTheme {
-                val todoItemList by todoUseCase.getAllItemFlow().collectAsState(initial = emptyList())
-                val deletedCount by todoUseCase.getFinishedItemCountFlow().collectAsState(initial = 0L)
-                val lastDeleted by todoUseCase.getLatestDeletedItemFlow().collectAsState(initial = null)
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = MaterialTheme.colors.background),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "완료 후 삭제된 TODO 개수: $deletedCount",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                    Text(
-                        text = "가장 최근에 삭제된 TODO: ${lastDeleted?.title ?: "없음"}",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                    )
-                    ToDoView(
-                        todoItemList,
-                        addAction = { title, imageUrl ->
-                            todoUseCase.insertItem(title, imageUrl)
-                        },
-                        deleteAction = { todoItem ->
-                            todoUseCase.deleteItem(todoItem.id, todoItem.title, todoItem.imageUrl, todoItem.isFinish, System.currentTimeMillis())
-                        },
-                        checkToggle = { id, checked ->
-                            todoUseCase.updateCheck(checked, id)
-                        }
-                    )
-                }
+                TodoScreen()
             }
         }
+    }
+}
+
+@Composable
+fun TodoScreen(
+    viewModel: TodoViewModel = hiltViewModel()
+) {
+    val todoUseCase = viewModel.todoUseCase
+    val todoItemList by todoUseCase.getAllItemFlow().collectAsState(initial = emptyList())
+    val deletedCount by todoUseCase.getFinishedItemCountFlow().collectAsState(initial = 0L)
+    val lastDeleted by todoUseCase.getLatestDeletedItemFlow().collectAsState(initial = null)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.background),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "완료 후 삭제된 TODO 개수: $deletedCount",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(4.dp)
+        )
+        Text(
+            text = "가장 최근에 삭제된 TODO: ${lastDeleted?.title ?: "없음"}",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+        )
+        ToDoView(
+            todoItemList,
+            addAction = { title, imageUrl ->
+                todoUseCase.insertItem(title, imageUrl)
+            },
+            deleteAction = { todoItem ->
+                todoUseCase.deleteItem(todoItem.id, todoItem.title, todoItem.imageUrl, todoItem.isFinish, System.currentTimeMillis())
+            },
+            checkToggle = { id, checked ->
+                todoUseCase.updateCheck(checked, id)
+            }
+        )
     }
 }
 
