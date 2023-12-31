@@ -4,21 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -52,74 +54,61 @@ fun TodoScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colors.background),
+            .background(color = MaterialTheme.colors.background)
+            .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "완료 후 삭제된 TODO 개수: ${state.deletedCount}",
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(4.dp)
         )
         Text(
             text = "가장 최근에 삭제된 TODO: ${state.lastDeletedItem?.title ?: "없음"}",
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(top = 4.dp)
         )
-        Column(
-            modifier = Modifier.fillMaxSize()
+        TextField(
+            value = state.titleText,
+            onValueChange = { viewModel.updateTitleText(it) },
+            label = { Text("enter TODO title") },
+            modifier = Modifier.fillMaxWidth().padding(top = 5.dp)
+        )
+        TextField(
+            value = state.imageUrlText,
+            onValueChange = { viewModel.updateImageUrlText(it) },
+            label = { Text("enter TODO imageUrl") },
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+        )
+        OutlinedButton(
+            onClick = {
+                viewModel.addItem()
+                viewModel.updateTitleText("")
+                viewModel.updateImageUrlText("")
+            },
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+                .height(45.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(10.dp)
-            ) {
-                TextField(
-                    value = state.titleText,
-                    onValueChange = { viewModel.updateTitleText(it) },
-                    modifier = Modifier.weight(3f),
-                    label = { Text("enter TODO title") }
-                )
-                OutlinedButton(
-                    onClick = {
-                        viewModel.addItem()
-                        viewModel.updateTitleText("")
-                        viewModel.updateImageUrlText("")
+            Text(text = "ADD")
+        }
+        LazyColumn(
+            modifier = Modifier.padding(top = 5.dp)
+        ) {
+            itemsIndexed(state.itemList) { index, item ->
+                ToDoRow(
+                    item = item,
+                    deleteAction = {
+                        viewModel.deleteItem(item)
                     },
-                    modifier = Modifier
-                        .weight(1f)
-                        .wrapContentHeight()
-                ) {
-                    Text(text = "Add")
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(10.dp)
-            ) {
-                TextField(
-                    value = state.imageUrlText,
-                    onValueChange = { viewModel.updateImageUrlText(it) },
-                    modifier = Modifier.weight(3f),
-                    label = { Text("enter TODO imageUrl") },
+                    checkToggle = { checked ->
+                        viewModel.updateItem(item.id, checked)
+                    }
                 )
-            }
-            LazyColumn {
-                itemsIndexed(state.itemList) { index, item ->
-                    ToDoRow(
-                        item = item,
-                        deleteAction = {
-                            viewModel.deleteItem(item)
-                        },
-                        checkToggle = { checked ->
-                            viewModel.updateItem(item.id, checked)
-                        }
-                    )
-                    Divider()
-                }
+                Divider()
             }
         }
     }
@@ -134,8 +123,14 @@ fun ToDoRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
-        verticalAlignment = Alignment.CenterVertically
+            .wrapContentHeight()
+            .padding(10.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = { checkToggle(!item.isFinish) }
+            ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = item.title,
@@ -144,21 +139,30 @@ fun ToDoRow(
         AsyncImage(
             model = item.imageUrl,
             contentDescription = null,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(2f)
         )
         Checkbox(
             checked = item.isFinish,
             onCheckedChange = {
                 checkToggle(it)
             },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(0.7f),
         )
-        OutlinedButton(
+        IconButton(
             onClick = { deleteAction() },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(0.7f)
         ) {
-            Text(text = "Delete")
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = null
+            )
         }
+//        OutlinedButton(
+//            onClick = { deleteAction() },
+//            modifier = Modifier.weight(1.1f),
+//        ) {
+//            Text(text = "Delete")
+//        }
     }
 }
 
