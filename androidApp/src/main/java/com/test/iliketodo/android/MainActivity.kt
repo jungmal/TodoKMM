@@ -53,10 +53,20 @@ class MainActivity : ComponentActivity() {
 fun TodoScreen(
     viewModel: TodoViewModel = hiltViewModel()
 ) {
+    // hilt 적용
     val todoUseCase = viewModel.todoUseCase
+
     val todoItemList by todoUseCase.getAllItemFlow().collectAsState(initial = emptyList())
     val deletedCount by todoUseCase.getFinishedItemCountFlow().collectAsState(initial = 0L)
     val lastDeleted by todoUseCase.getLatestDeletedItemFlow().collectAsState(initial = null)
+
+    var titleText by remember {
+        mutableStateOf("")
+    }
+    var imageUrlText by remember {
+        mutableStateOf("")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,87 +84,61 @@ fun TodoScreen(
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
         )
-        ToDoView(
-            todoItemList,
-            addAction = { title, imageUrl ->
-                todoUseCase.insertItem(title, imageUrl)
-            },
-            deleteAction = { todoItem ->
-                todoUseCase.deleteItem(todoItem.id, todoItem.title, todoItem.imageUrl, todoItem.isFinish, System.currentTimeMillis())
-            },
-            checkToggle = { id, checked ->
-                todoUseCase.updateCheck(checked, id)
-            }
-        )
-    }
-}
-
-@Composable
-fun ToDoView(
-    itemList: List<TODOItem>,
-    addAction: (String, String) -> Unit = { _, _ -> },
-    deleteAction: (TODOItem) -> Unit = {},
-    checkToggle: (Long, Boolean) -> Unit = { _, _ -> }
-) {
-    var titleText by remember {
-        mutableStateOf("")
-    }
-    var imageUrlText by remember {
-        mutableStateOf("")
-    }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(10.dp)
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            TextField(
-                value = titleText,
-                onValueChange = { titleText = it },
-                modifier = Modifier.weight(3f),
-                label = { Text("enter TODO title") }
-            )
-            OutlinedButton(
-                onClick = {
-                    addAction(titleText, imageUrlText)
-                    titleText = ""
-                    imageUrlText = ""
-                },
+            Row(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
                     .wrapContentHeight()
+                    .padding(10.dp)
             ) {
-                Text(text = "Add")
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(10.dp)
-        ) {
-            TextField(
-                value = imageUrlText,
-                onValueChange = { imageUrlText = it },
-                modifier = Modifier.weight(3f),
-                label = { Text("enter TODO imageUrl") },
-            )
-        }
-        LazyColumn {
-            itemsIndexed(itemList) { index, item ->
-                ToDoRow(
-                    item = item,
-                    deleteAction = {
-                        deleteAction(item)
-                    },
-                    checkToggle = { checked ->
-                        checkToggle(item.id, checked)
-                    }
+                TextField(
+                    value = titleText,
+                    onValueChange = { titleText = it },
+                    modifier = Modifier.weight(3f),
+                    label = { Text("enter TODO title") }
                 )
-                Divider()
+                OutlinedButton(
+                    onClick = {
+                        viewModel.addItem(titleText, imageUrlText)
+                        //addAction(titleText, imageUrlText)
+                        titleText = ""
+                        imageUrlText = ""
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .wrapContentHeight()
+                ) {
+                    Text(text = "Add")
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(10.dp)
+            ) {
+                TextField(
+                    value = imageUrlText,
+                    onValueChange = { imageUrlText = it },
+                    modifier = Modifier.weight(3f),
+                    label = { Text("enter TODO imageUrl") },
+                )
+            }
+            LazyColumn {
+                itemsIndexed(todoItemList) { index, item ->
+                    ToDoRow(
+                        item = item,
+                        deleteAction = {
+                            viewModel.deleteItem(item)
+                        },
+                        checkToggle = { checked ->
+                            viewModel.updateItem(item.id, checked)
+                        }
+                    )
+                    Divider()
+                }
             }
         }
     }
@@ -201,6 +185,6 @@ fun ToDoRow(
 @Composable
 fun DefaultPreview() {
     MyApplicationTheme {
-        ToDoView(emptyList())
+        TodoScreen()
     }
 }
