@@ -26,15 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import com.test.TODOItem
-import com.test.iliketodo.TodoUseCase
-import com.test.iliketodo.DriverFactory
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,19 +46,8 @@ class MainActivity : ComponentActivity() {
 fun TodoScreen(
     viewModel: TodoViewModel = hiltViewModel()
 ) {
-    // hilt 적용
-    val todoUseCase = viewModel.todoUseCase
 
-    val todoItemList by todoUseCase.getAllItemFlow().collectAsState(initial = emptyList())
-    val deletedCount by todoUseCase.getFinishedItemCountFlow().collectAsState(initial = 0L)
-    val lastDeleted by todoUseCase.getLatestDeletedItemFlow().collectAsState(initial = null)
-
-    var titleText by remember {
-        mutableStateOf("")
-    }
-    var imageUrlText by remember {
-        mutableStateOf("")
-    }
+    val state = viewModel.todoState.collectAsState().value
 
     Column(
         modifier = Modifier
@@ -74,13 +56,13 @@ fun TodoScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "완료 후 삭제된 TODO 개수: $deletedCount",
+            text = "완료 후 삭제된 TODO 개수: ${state.deletedCount}",
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(4.dp)
         )
         Text(
-            text = "가장 최근에 삭제된 TODO: ${lastDeleted?.title ?: "없음"}",
+            text = "가장 최근에 삭제된 TODO: ${state.lastDeletedItem?.title ?: "없음"}",
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
         )
@@ -94,17 +76,16 @@ fun TodoScreen(
                     .padding(10.dp)
             ) {
                 TextField(
-                    value = titleText,
-                    onValueChange = { titleText = it },
+                    value = state.titleText,
+                    onValueChange = { viewModel.updateTitleText(it) },
                     modifier = Modifier.weight(3f),
                     label = { Text("enter TODO title") }
                 )
                 OutlinedButton(
                     onClick = {
-                        viewModel.addItem(titleText, imageUrlText)
-                        //addAction(titleText, imageUrlText)
-                        titleText = ""
-                        imageUrlText = ""
+                        viewModel.addItem()
+                        viewModel.updateTitleText("")
+                        viewModel.updateImageUrlText("")
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -120,14 +101,14 @@ fun TodoScreen(
                     .padding(10.dp)
             ) {
                 TextField(
-                    value = imageUrlText,
-                    onValueChange = { imageUrlText = it },
+                    value = state.imageUrlText,
+                    onValueChange = { viewModel.updateImageUrlText(it) },
                     modifier = Modifier.weight(3f),
                     label = { Text("enter TODO imageUrl") },
                 )
             }
             LazyColumn {
-                itemsIndexed(todoItemList) { index, item ->
+                itemsIndexed(state.itemList) { index, item ->
                     ToDoRow(
                         item = item,
                         deleteAction = {

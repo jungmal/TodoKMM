@@ -7,6 +7,7 @@ import com.test.iliketodo.TodoUseCase
 import com.test.iliketodo.presentation.ContentViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,14 +23,36 @@ class TodoViewModel @Inject constructor(
                 todoState.value = todoState.value.copy(itemList = it)
             }
         }
+        viewModelScope.launch {
+            todoUseCase.getFinishedItemCountFlow().collect {
+                todoState.value = todoState.value.copy(
+                    deletedCount = it.toInt()
+                )
+            }
+        }
+        viewModelScope.launch {
+            todoUseCase.getLatestDeletedItemFlow().collect {
+                todoState.value = todoState.value.copy(
+                    lastDeletedItem = it
+                )
+            }
+        }
+    }
+
+    fun updateTitleText(value: String) {
+        todoState.value = todoState.value.copy(titleText = value)
+    }
+
+    fun updateImageUrlText(value: String) {
+        todoState.value = todoState.value.copy(imageUrlText = value)
     }
 
     fun deleteItem(todoItem: TODOItem) {
         todoUseCase.deleteItem(todoItem.id, todoItem.title, todoItem.imageUrl, todoItem.isFinish, System.currentTimeMillis())
     }
 
-    fun addItem(title: String, imageUrl: String) {
-        todoUseCase.insertItem(title, imageUrl)
+    fun addItem() {
+        todoUseCase.insertItem(todoState.value.titleText, todoState.value.imageUrlText)
     }
 
     fun updateItem(id: Long, checked: Boolean) {
