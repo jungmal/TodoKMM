@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,7 +74,7 @@ fun TodoScreen(
             value = state.titleText,
             onValueChange = { viewModel.updateTitleText(it) },
             label = { Text("enter TODO title") },
-            modifier = Modifier.fillMaxWidth().padding(top = 5.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
         )
         TextField(
             value = state.imageUrlText,
@@ -139,7 +140,7 @@ fun ToDoRow(
         AsyncImage(
             model = item.imageUrl,
             contentDescription = null,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(1f)
         )
         Checkbox(
             checked = item.isFinish,
@@ -157,12 +158,6 @@ fun ToDoRow(
                 contentDescription = null
             )
         }
-//        OutlinedButton(
-//            onClick = { deleteAction() },
-//            modifier = Modifier.weight(1.1f),
-//        ) {
-//            Text(text = "Delete")
-//        }
     }
 }
 
