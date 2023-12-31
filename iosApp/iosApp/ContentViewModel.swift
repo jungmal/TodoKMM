@@ -41,6 +41,8 @@ class ContentViewModel: ObservableObject {
 
     private func addItem(title: String, imageUrl: String) {
         todoUseCase.insertItem(title: title, imageUrl: imageUrl)
+        state.titleText = ""
+        state.imageUrlText = ""
     }
 
     private func deleteItem(item: TODOItem) {

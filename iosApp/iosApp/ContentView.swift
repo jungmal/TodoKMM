@@ -25,19 +25,32 @@ struct ContentView: View {
                     set: { viewModel.updateImageUrlText($0) }
                 ))
             }.padding(10)
-
-            Button("ADD") {
+            
+            Button(action: {
                 viewModel.trigger(.addItem(title: viewModel.state.titleText, imageUrl: viewModel.state.imageUrlText))
+            }) {
+                HStack {
+                    Spacer()
+                    Text("ADD")
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .padding()
+                .contentShape(Rectangle())
             }
+            .background(Color.blue)
+            .cornerRadius(10)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 10)
 
-            ForEach(viewModel.state.itemList, id: \.self) { item in
+            List(viewModel.state.itemList, id: \.self) { item in
                 ToDoRow(item: item, actionDelete: {
                     viewModel.trigger(.deleteItem(item: item))
                 }, updateToggle: {
                     viewModel.trigger(.updateItem(item: item, checked: !item.isFinish))
                 })
             }
-            Spacer()
+            .listStyle(PlainListStyle())
         }
         .onAppear {
             viewModel.trigger(.loadAllData)
@@ -55,15 +68,20 @@ struct ToDoRow: View {
             Text(item.title)
             Spacer()
             TransactionCardRow(transaction: Transaction(), imageUrl: item.imageUrl)
-            Spacer()
             Image(systemName: item.isFinish ? "checkmark.square.fill" : "square")
                 .foregroundColor(item.isFinish ? Color(UIColor.systemBlue) : Color.secondary)
                 .onTapGesture {
                     updateToggle()
                 }
-            Button("Delete") {
-                actionDelete()
+            Button(action: actionDelete) {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
             }
+            .buttonStyle(PlainButtonStyle()) // 버튼 스타일을 명시적으로 지정하여 탭 영역을 제한
+        }
+        .contentShape(Rectangle()) // 전체 HStack에 대한 탭 가능 영역 확장
+        .onTapGesture {
+            updateToggle()
         }
     }
 }
@@ -92,7 +110,7 @@ struct CustomImageView: View {
         Image(uiImage: image)
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width:100, height:100)
+            .frame(width:90, height:60)
             .onReceive(imageLoader.$image) { image in
                 self.image = image
             }
