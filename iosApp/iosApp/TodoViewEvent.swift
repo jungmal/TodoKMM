@@ -9,7 +9,7 @@
 import shared
 import Foundation
 
-enum ContentViewEvent {
+enum TodoViewEvent {
     case addItem(title: String, imageUrl: String)
     case deleteItem(item: TODOItem)
     case updateItem(item: TODOItem, checked: Bool)

@@ -10,7 +10,7 @@ import shared
 import Foundation
 
 
-struct ContentViewState {
+struct TodoViewState {
     var itemList: [TODOItem] = []
     var lastDeletedItem: DeletedTODOItem? = nil
     var deletedCount: Int = 0

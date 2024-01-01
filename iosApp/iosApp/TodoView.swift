@@ -4,8 +4,8 @@ import Foundation
 import Combine
 
 
-struct ContentView: View {
-    @StateObject var viewModel = ContentViewModel()
+struct TodoView: View {
+    @StateObject var viewModel = TodoViewModel()
 
     var body: some View {
         VStack {
@@ -86,9 +86,9 @@ struct ToDoRow: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct TodoView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        TodoView()
     }
 }
 

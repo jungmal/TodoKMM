@@ -1,9 +1,9 @@
-package com.test.iliketodo.presentation
+package com.test.iliketodo.android
 
 import com.test.DeletedTODOItem
 import com.test.TODOItem
 
-data class ContentViewState(
+data class TodoViewState(
     val itemList: List<TODOItem> = emptyList(),
     val lastDeletedItem: DeletedTODOItem? = null,
     val deletedCount: Int = 0,

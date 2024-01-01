@@ -10,11 +10,11 @@
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
-		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		7555FF83242A565900829871 /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* TodoView.swift */; };
 		ED6B321E2B359C5800ADF96E /* CollectorHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6B321D2B359C5800ADF96E /* CollectorHelper.swift */; };
-		ED6FFF062B3EAB1500E11E18 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6FFF052B3EAB1500E11E18 /* ContentViewModel.swift */; };
-		ED6FFF082B3EAB5B00E11E18 /* ContentViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6FFF072B3EAB5B00E11E18 /* ContentViewState.swift */; };
-		ED6FFF0A2B3EABAB00E11E18 /* ContentViewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6FFF092B3EABAB00E11E18 /* ContentViewEvent.swift */; };
+		ED6FFF062B3EAB1500E11E18 /* TodoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6FFF052B3EAB1500E11E18 /* TodoViewModel.swift */; };
+		ED6FFF082B3EAB5B00E11E18 /* TodoViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6FFF072B3EAB5B00E11E18 /* TodoViewState.swift */; };
+		ED6FFF0A2B3EABAB00E11E18 /* TodoViewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6FFF092B3EABAB00E11E18 /* TodoViewEvent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,12 +35,12 @@
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7555FF82242A565900829871 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ED6B321D2B359C5800ADF96E /* CollectorHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectorHelper.swift; sourceTree = "<group>"; };
-		ED6FFF052B3EAB1500E11E18 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
-		ED6FFF072B3EAB5B00E11E18 /* ContentViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewState.swift; sourceTree = "<group>"; };
-		ED6FFF092B3EABAB00E11E18 /* ContentViewEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewEvent.swift; sourceTree = "<group>"; };
+		ED6FFF052B3EAB1500E11E18 /* TodoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewModel.swift; sourceTree = "<group>"; };
+		ED6FFF072B3EAB5B00E11E18 /* TodoViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewState.swift; sourceTree = "<group>"; };
+		ED6FFF092B3EABAB00E11E18 /* TodoViewEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewEvent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,13 +84,13 @@
 			children = (
 				ED6B321D2B359C5800ADF96E /* CollectorHelper.swift */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
-				7555FF82242A565900829871 /* ContentView.swift */,
+				7555FF82242A565900829871 /* TodoView.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
-				ED6FFF052B3EAB1500E11E18 /* ContentViewModel.swift */,
-				ED6FFF072B3EAB5B00E11E18 /* ContentViewState.swift */,
-				ED6FFF092B3EABAB00E11E18 /* ContentViewEvent.swift */,
+				ED6FFF052B3EAB1500E11E18 /* TodoViewModel.swift */,
+				ED6FFF072B3EAB5B00E11E18 /* TodoViewState.swift */,
+				ED6FFF092B3EABAB00E11E18 /* TodoViewEvent.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -194,11 +194,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED6FFF062B3EAB1500E11E18 /* ContentViewModel.swift in Sources */,
+				ED6FFF062B3EAB1500E11E18 /* TodoViewModel.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
-				7555FF83242A565900829871 /* ContentView.swift in Sources */,
-				ED6FFF0A2B3EABAB00E11E18 /* ContentViewEvent.swift in Sources */,
-				ED6FFF082B3EAB5B00E11E18 /* ContentViewState.swift in Sources */,
+				7555FF83242A565900829871 /* TodoView.swift in Sources */,
+				ED6FFF0A2B3EABAB00E11E18 /* TodoViewEvent.swift in Sources */,
+				ED6FFF082B3EAB5B00E11E18 /* TodoViewState.swift in Sources */,
 				ED6B321E2B359C5800ADF96E /* CollectorHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

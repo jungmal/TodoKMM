@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.test.TODOItem
 import com.test.iliketodo.TodoUseCase
-import com.test.iliketodo.presentation.ContentViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,7 +13,7 @@ import javax.inject.Inject
 class TodoViewModel @Inject constructor(
     val todoUseCase: TodoUseCase
 ) : ViewModel() {
-    val todoState = MutableStateFlow(ContentViewState())
+    val todoState = MutableStateFlow(TodoViewState())
 
     init {
         viewModelScope.launch {

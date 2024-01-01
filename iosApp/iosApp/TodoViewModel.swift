@@ -12,11 +12,11 @@ import Foundation
 import Combine
 
 
-class ContentViewModel: ObservableObject {
-    @Published private(set) var state = ContentViewState()
+class TodoViewModel: ObservableObject {
+    @Published private(set) var state = TodoViewState()
     let todoUseCase: TodoUseCase = TodoUseCase(driverFactory: DriverFactory())
 
-    func trigger(_ event: ContentViewEvent) {
+    func trigger(_ event: TodoViewEvent) {
         switch event {
         case .addItem(let title, let imageUrl):
             addItem(title: title, imageUrl: imageUrl)
